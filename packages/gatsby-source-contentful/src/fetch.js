@@ -2,6 +2,7 @@ const contentful = require(`contentful`)
 const _ = require(`lodash`)
 const chalk = require(`chalk`)
 const normalize = require(`./normalize`)
+const proxy = require('proxy-agent')
 const { formatPluginOptionsForCLI } = require(`./plugin-options`)
 
 module.exports = async ({ syncToken, reporter, pluginConfig }) => {
@@ -16,6 +17,10 @@ module.exports = async ({ syncToken, reporter, pluginConfig }) => {
     host: pluginConfig.get(`host`),
     environment: pluginConfig.get(`environment`),
     proxy: pluginConfig.get(`proxy`),
+  }
+  
+  if (pluginConfig.get(`httpsAgent`)) {
+    contentfulClientOptions.httpsAgent = proxy(pluginConfig.get(`httpsAgent`));
   }
 
   const client = contentful.createClient(contentfulClientOptions)
